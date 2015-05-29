@@ -17,3 +17,4 @@ Added cm/s on MoveFoward so if the value used on function is bellow 40cm/s the M
 also added a new odometry function receives current_cell.theta and move
 updates next_theta
 current_cell.theta=next_theta
+The search speed is optimized for 9 cm/s

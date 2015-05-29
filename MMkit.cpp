@@ -45,6 +45,7 @@ int _left_Correction=90;  //90
 
 float _leftSpeed = 474.0; //default _leftSpeed 500
 float _rightSpeed = 474.0; //default _rightSpeed 500
+int _speed=6;
 
 int sensorDark, sensorLight;
 const int IRsensorsPairs[][2] = {
@@ -117,6 +118,7 @@ void MMkit::setIR_LEFT(float LeftCorrection){
 void MMkit::setForwardMotionSpeed (float speed) {
      if(speed<40){
      speed=158*speed;
+     _speed=speed;
      }
   _motorLeft.setSpeed(speed);
   _motorRight.setSpeed(speed);
@@ -172,6 +174,8 @@ void MMkit::goForward(float cm) {
 }
 
 void MMkit::rotate(float deg) {//positive rotates Right, negative rotates Left
+   _motorLeft.setCurrentPosition(0);
+   _motorRight.setCurrentPosition(0);  
   deg=deg/10;
   _motorLeft.move(cmToSteps((deg/360.0)*3.14159265358979*_WHEEL_SPACING)); 
   _motorRight.move(-cmToSteps((deg/360.0)*3.14159265358979*_WHEEL_SPACING));
@@ -260,7 +264,6 @@ void MMkit::waitForStart(){
     digitalWrite(13,HIGH);
     Serial.println("Waiting for hand in front left and right");                         
   } 
-  Serial.println(IRsensorsValues[0]);
   delay(500);
   digitalWrite(13,LOW);
 }
