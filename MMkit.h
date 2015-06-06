@@ -13,13 +13,13 @@ class MMkit
 {
 public:
     // IR thresholds
-    #define IR_FRONT_L_THRESHOLD 95  //38
-    #define IR_FRONT_R_THRESHOLD 95  //38
-    #define IR_LEFT_THRESHOLD    58  //18
-    #define IR_RIGHT_THRESHOLD   45
+    #define IR_FRONT_L_THRESHOLD 75  //38
+    #define IR_FRONT_R_THRESHOLD 75  //38
+    #define IR_LEFT_THRESHOLD    68  //18
+    #define IR_RIGHT_THRESHOLD   35
     
-    #define _WHEEL_SPACING 81.0 //mm
-    #define _WHEEL_RADIUS 27.5 //mm
+    #define _WHEEL_SPACING 82.0 //mm  81
+    #define _WHEEL_RADIUS 30.5 //mm   27.5
 
     
     MMkit(AccelStepper leftMotor, AccelStepper rightMotor);
@@ -44,8 +44,7 @@ public:
     ///Output parameter: none 
     void rotateLeft(float deg);
     
-    void setActiveSpeeds(float leftSpeed, float rightSpeed);
-    
+     
     ///Description: Perform initial configuration
     ///Input parameter: none
     ///Output parameter: none   

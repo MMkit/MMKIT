@@ -40,8 +40,8 @@ boolean Running=false;
 
 int IRsensorsValues[4];
 int reading=0;
-int _right_Correction=-60;//-60
-int _left_Correction=90;  //90
+int _right_Correction=0;//-60
+int _left_Correction=0;  //90
 
 float _leftSpeed = 474.0; //default _leftSpeed 500
 float _rightSpeed = 474.0; //default _rightSpeed 500
@@ -159,12 +159,12 @@ boolean MMkit::running() {
 
 long MMkit::cmToSteps(float cm)
 {
-  return (long)((cm * 10.0 *10.0 * 158.0)/(_WHEEL_RADIUS * 3.14159265358979 * 2.0));
+  return (long)((cm * 10.0 *10.0 * 171.0)/(_WHEEL_RADIUS * 3.14159265358979 * 2.0));//158
 }
 
 long MMkit::stepsToCm(float steps)
 {
-  return ((long)((float)(steps *(_WHEEL_RADIUS * 3.14159265358979))/1580.0));
+  return ((long)((float)(steps *(_WHEEL_RADIUS * 3.14159265358979))/1710.0));//1580
 }
 
 void MMkit::goForward(float cm) {
@@ -196,44 +196,9 @@ void MMkit::rotateLeft(float deg) {//Positive turns Right, Negative turns Left (
     _motorRight.setCurrentPosition(0);
     _motorRight.move(cmToSteps((deg/360.0)*3.14159265358979*_WHEEL_SPACING*2));
     _motorLeft.move(0.0);
- /*    while (_motorLeft.distanceToGo() > 0 || _motorRight.distanceToGo() < 0){
-      _motorLeft.runSpeed();
-      _motorRight.runSpeed();
-    } */
-  //_motorLeft.move(-cmToSteps((deg/360.0)*3.14159265358979*_WHEEL_SPACING*2)/4);
   Running=true;
 }
 
-void MMkit::setActiveSpeeds(float leftSpeed, float rightSpeed) {
-  _leftSpeed = leftSpeed;
-  _rightSpeed = rightSpeed;
-
-  if (_leftSpeed > 0) {
-    _motorLeft.move(1000000);
-    _motorLeft.setSpeed(_leftSpeed);
-  }
-  else if (_leftSpeed < 0) {
-    _motorLeft.move(-1000000);
-    _motorLeft.setSpeed(_leftSpeed);
-  }
-  else {
-    _motorLeft.move(0);
-    _motorLeft.setSpeed(0);
-  }
-
-  if (_rightSpeed > 0) {
-    _motorRight.move(1000000);
-    _motorRight.setSpeed(_rightSpeed);
-  }
-  else if (_rightSpeed < 0) {
-    _motorRight.move(-1000000);
-    _motorRight.setSpeed(_rightSpeed);
-  }
-  else {
-    _motorRight.move(0);
-    _motorRight.setSpeed(0);
-  }
-}
 
 void MMkit::setupMMkit()
 {
@@ -296,7 +261,8 @@ void MMkit::runSpeed() {
   reading++;
   if(reading>79){
    readIRSensors();
-   reading=0;              
+   reading=0;
+   //Serial.println(_motorRight.distanceToGo());              
    }
   
   
@@ -313,16 +279,16 @@ void MMkit::runSpeed() {
   //if ((_motorLeft.distanceToGo() > 210) && (_motorRight.distanceToGo() < 360)) { // ensures that's a good zone to perform correction
   switch(current_cell.wall){
   case  B00000110:  // if there is left and right wall 
-    _motorLeft.setSpeed(_leftSpeed+((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2)-_left_Correction )*5);
-    _motorRight.setSpeed(+(_rightSpeed-((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2)-_left_Correction )*5));
+    _motorLeft.setSpeed(_leftSpeed+((6000 / (IRsensorsValues[1]- 17) - 2 ) -(6000 / (IRsensorsValues[2]- 17) - 2)-_right_Correction )*5);
+    _motorRight.setSpeed(+(_rightSpeed-((6000 / (IRsensorsValues[1]- 17) - 2 )-(6000 / (IRsensorsValues[2]- 17) - 2)-_right_Correction )*5));
     break;
   case B00000100:  //Left wall
-    _motorRight.setSpeed(+(_rightSpeed-(67-(6000 / (IRsensorsValues[2]- 17) - 2 ))*5));
-    _motorLeft.setSpeed(_leftSpeed+(67-(6000 / (IRsensorsValues[2]- 17) - 2))*5 );
+    _motorRight.setSpeed(+(_rightSpeed-(58-(6000 / (IRsensorsValues[2]- 17) - 2 ) )*7));
+    _motorLeft.setSpeed(_leftSpeed+(58-(6000 / (IRsensorsValues[2]- 17) - 2) )*7 );
     break;
   case B00000010:  //Right wall
-    _motorRight.setSpeed(+(_rightSpeed+(65-(6000 / (IRsensorsValues[1]- 17) - 2 )-_right_Correction)*5));
-    _motorLeft.setSpeed(_leftSpeed-(65-(6000 / (IRsensorsValues[1]- 17) - 2)-_right_Correction)*5 );
+    _motorRight.setSpeed(+(_rightSpeed+(88-(6000 / (IRsensorsValues[1]) - 2 ))*10));
+    _motorLeft.setSpeed(_leftSpeed-(58-(6000 / (IRsensorsValues[1]) - 2))*10);
     break;
   default:
     _motorLeft.setSpeed(_leftSpeed);
@@ -330,13 +296,21 @@ void MMkit::runSpeed() {
     break;
   }
   //Serial.println(IRsensorsValues[3]); 
-  if(IRsensorsValues[0]>170&&IRsensorsValues[3]>170){
-    
+  if(IRsensorsValues[0]>170&&IRsensorsValues[3]>130){
+    if(_motorRight.distanceToGo()>1000&&_motorLeft.distanceToGo()>1000){
+         if(current_cell.theta=0x02)current_cell.y++;
+         if(current_cell.theta=0x01)current_cell.x--;
+         if(current_cell.theta=0x04)current_cell.x++; 
+         if(current_cell.theta=0x08)current_cell.y--;
+         digitalWrite(13,HIGH);
+    }
     _motorLeft.setCurrentPosition(0);
     _motorRight.setCurrentPosition(0);                                              
     _motorLeft.setSpeed(+_leftSpeed);
     _motorRight.setSpeed(_rightSpeed);
-    goForward(-(6000 / (IRsensorsValues[0]- 17)/14));
+    //_motorLeft.move(cmToSteps(-(6000 / (IRsensorsValues[3]- 17)/14)));
+    //_motorRight.move(cmToSteps(-(6000 / (IRsensorsValues[0]- 17)/14)));
+    goForward(-1.5);
     while (_motorLeft.distanceToGo() < 0 || _motorRight.distanceToGo() < 0){
       //Serial.println(_motorLeft.distanceToGo());  //for debug purposes
       //Serial.println(_motorRight.distanceToGo()); //for debug purposes

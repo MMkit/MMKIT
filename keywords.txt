@@ -16,6 +16,8 @@ rotateLeft	KEYWORD2
 rotateRight	KEYWORD2
 rotate	KEYWORD2
 testIRSensors	KEYWORD2
+setIR_LEFT	KEYWORD2
+setIR_RIGHT	KEYWORD2
 waitForStart	KEYWORD2
 setupMMkit	KEYWORD2
 running	KEYWORD2
