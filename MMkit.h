@@ -13,15 +13,15 @@ class MMkit
 {
 public:
     // IR thresholds
-    #define IR_FRONT_L_THRESHOLD 75  //38
-    #define IR_FRONT_R_THRESHOLD 75  //38
-    #define IR_LEFT_THRESHOLD    68  //18
-    #define IR_RIGHT_THRESHOLD   35
+    #define IR_FRONT_L_THRESHOLD 105  //38
+    #define IR_FRONT_R_THRESHOLD 105  //38
+    #define IR_LEFT_THRESHOLD    70  //18
+    #define IR_RIGHT_THRESHOLD   70
     
-    #define _WHEEL_SPACING 82.0 //mm  81
-    #define _WHEEL_RADIUS 30.5 //mm   27.5
+    #define _WHEEL_SPACING 81.0 //mm  81
+    #define _WHEEL_RADIUS 31.0 //mm   27.5
 
-    
+    int IRsensorsValues[4];
     MMkit(AccelStepper leftMotor, AccelStepper rightMotor);
     
     ///Description: The robot will try to move in its forward direction at the predefined 
@@ -64,6 +64,7 @@ public:
     boolean isWallRight(void);
     boolean isWallLeft(void);
     boolean isWallFront(void);
+    
     /*********************/
 /* define structures */
 /*********************/
@@ -77,6 +78,7 @@ struct cell
 };
     struct cell current_cell;
     struct cell track[156];
+
     
     ///  Description: Define the Wheel Spacing of the robot
     ///  Input parameter: Wheel Spacing in cm/s

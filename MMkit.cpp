@@ -38,7 +38,7 @@ const int RIGHT_DG = A3;
 const int RIGHT_FT = A2;
 boolean Running=false;
 
-int IRsensorsValues[4];
+
 int reading=0;
 int _right_Correction=0;//-60
 int _left_Correction=0;  //90
@@ -116,7 +116,7 @@ void MMkit::setIR_LEFT(float LeftCorrection){
  }
  
 void MMkit::setForwardMotionSpeed (float speed) {
-     if(speed<40){
+     if(speed<80){
      speed=158*speed;
      _speed=speed;
      }
@@ -159,12 +159,12 @@ boolean MMkit::running() {
 
 long MMkit::cmToSteps(float cm)
 {
-  return (long)((cm * 10.0 *10.0 * 171.0)/(_WHEEL_RADIUS * 3.14159265358979 * 2.0));//158
+  return (long)((cm * 10.0 *10.0 * 158.0)/(_WHEEL_RADIUS * 3.14159265358979 * 2.0));//171
 }
 
 long MMkit::stepsToCm(float steps)
 {
-  return ((long)((float)(steps *(_WHEEL_RADIUS * 3.14159265358979))/1710.0));//1580
+  return ((long)((float)(steps *(_WHEEL_RADIUS * 3.14159265358979))/1580.0));//1580
 }
 
 void MMkit::goForward(float cm) {
@@ -212,10 +212,10 @@ void MMkit::setupMMkit()
   pinMode(LED_RF, OUTPUT);
   digitalWrite(LED_RF, LOW);
   _motorRight.setPinsInverted(true, false, true);
-  _motorLeft.setMaxSpeed(80000); //900
-  _motorRight.setMaxSpeed(80000); //900
-  _motorLeft.setAcceleration(20000);
-  _motorRight.setAcceleration(20000);
+  _motorLeft.setMaxSpeed(10000); //80000
+  _motorRight.setMaxSpeed(10000); //80000
+  _motorLeft.setAcceleration(1000);//20000
+  _motorRight.setAcceleration(1000);//20000
   _motorLeft.setSpeed(_leftSpeed); //Must be set once to allow movement, setSpeed(float, float) should be called after moveTo, not needed to be called after move()
   _motorRight.setSpeed(_rightSpeed); //Must be set once to allow movement
 }
@@ -257,7 +257,6 @@ void MMkit::stop() {
 }
 
 void MMkit::runSpeed() {
-  running();
   reading++;
   if(reading>79){
    readIRSensors();
@@ -296,7 +295,7 @@ void MMkit::runSpeed() {
     break;
   }
   //Serial.println(IRsensorsValues[3]); 
-  if(IRsensorsValues[0]>170&&IRsensorsValues[3]>130){
+  if(IRsensorsValues[0]>250&&IRsensorsValues[3]>250){
     if(_motorRight.distanceToGo()>1000&&_motorLeft.distanceToGo()>1000){
          if(current_cell.theta=0x02)current_cell.y++;
          if(current_cell.theta=0x01)current_cell.x--;
